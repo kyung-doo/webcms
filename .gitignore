@@ -8,5 +8,5 @@ application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 
-config.php
-database.php
+config/config.php
+config/database.php
