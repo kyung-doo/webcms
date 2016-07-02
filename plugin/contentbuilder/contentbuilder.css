@@ -8,7 +8,8 @@
 .content_builder .temp_tool .button:hover{color:#337ab7}
 .content_builder .temp_tool .button i{transition-duration:0.6s;transition-timing-function:cubic-bezier(0.19, 1, 0.22, 1);transition-property:rotate}
 .content_builder .temp_tool.hide .button i{-webkit-transform:rotate(180deg);transform:rotate(180deg)}
-.content_builder .temp_tool .temp_list{width:234px;height:100%;padding:5px;overflow-y:auto;overflow-x:hidden}
+.content_builder .temp_tool .temp_list{width:234px;height:100%;padding:5px;overflow-y:auto;overflow-x:hidden;margin-top:15px}
 .content_builder .temp_tool .temp_list>div{cursor:move;margin:0px 10px 12px 0px;display:inline-block;background-color:#000}
+.content_builder .temp_tool .temp_select{margin-left:4px;width:196px;border-radius:0}
 .content_builder .drag_obj{position:fixed;top:0;left:0;display:none}
 .content_builder .drag_obj.drag{display:block;box-shadow:0px 0px 10px rgba(0,0,0,0.2);opacity:0.8;z-index:9999}

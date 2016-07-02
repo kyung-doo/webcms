@@ -10,7 +10,13 @@ var ContentBuilder = ContentBuilder || (function ()
         DRAG_MOVE   : "dragMove",
         DRAG_END    : "dragEnd"
     };
-    
+
+
+    /*
+    *  템플릿 카테고리
+    */
+    var tempCategory = [{name:"Default", id:0},{name:"All", id:-1},{name:"Title", id:1},{name:"Title, Subtitle", id:2},{name:"Info, Title", id:3},{name:"Heading, Paragraph", id:5},{name:"Paragraph", id:6},{name:"Buttons", id:33},{name:"Cards", id:34},{name:"Images + Caption", id:9},{name:"Images", id:11},{name:"Single Image", id:12},{name:"Call to Action", id:13},{name:"List", id:14},{name:"Quotes", id:15},{name:"Profile", id:16},{name:"Map", id:17},{name:"Video", id:20},{name:"Social", id:18},{name:"Services", id:21},{name:"Contact Info", id:22},{name:"Pricing", id:23},{name:"Team Profile", id:24},{name:"Products/Portfolio", id:25},{name:"How It Works", id:26},{name:"Partners/Clients", id:27},{name:"As Featured On", id:28},{name:"Achievements", id:29},{name:"Skills", id:32},{name:"Coming Soon", id:30},{name:"Page Not Found", id:31},{name:"Separator", id:19}];
+
 
 
     /*
@@ -162,6 +168,7 @@ var ContentBuilder = ContentBuilder || (function ()
             var owner = this;
             var tempHtml = '<div class="temp_tool show">\
                                 <a class="button" href="javascript:"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>\
+                                <select class="temp_select form-control"></select>\
                                 <div class="temp_list"></div>\
                             </div>';
                             
@@ -193,6 +200,12 @@ var ContentBuilder = ContentBuilder || (function ()
                 return false;
             });
 
+            $(window).bind("resize", function ( e )
+            {
+                owner.tempTool.find(".temp_list").css({height:$(window).height()-80});
+            });
+
+            $(window).resize();
             owner.loadTemplate();
 
         },
@@ -231,12 +244,50 @@ var ContentBuilder = ContentBuilder || (function ()
                     
                 });
 
+                owner.setSelectBox();
+                owner.sortTemplete(0);
 
-            }); 
-
-            
-            
+            });  
         }, 
+
+
+        //카테고리 셀렉박스 세팅
+        setSelectBox : function ()
+        {
+            var owner = this;
+
+            for(var i=0; i<tempCategory.length; i++)
+            {
+                var item = tempCategory[i];
+                var option = $('<option value="'+item.id+'">' + item.name + '</option>');
+                owner.tempTool.find(".temp_select").append(option);
+            }
+
+            owner.tempTool.find(".temp_select").bind("change", function ( e )
+            {
+                var id = $(this).find("option:selected").val();
+                owner.sortTemplete(id);
+            });
+        },
+
+        // 카테고리 정렬
+        sortTemplete : function ( id )
+        {
+            var owner = this;
+            var list = owner.tempTool.find(".temp_list>div"); 
+            list.each(function ( i )
+            {
+                if(id != -1)
+                {
+                    if($(this).attr("data-cat").indexOf(id) > -1)   $(this).css({display:"inline-block"});
+                    else                                            $(this).css({display:"none"});
+                }
+                else
+                {
+                    $(this).css({display:"inline-block"});
+                }
+            });
+        },
 
         // html 출력
         getHtml : function ()
