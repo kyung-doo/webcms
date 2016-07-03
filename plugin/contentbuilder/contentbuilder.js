@@ -47,7 +47,7 @@ var ContentBuilder = ContentBuilder || (function ()
         {
             this.container = container;
             this.createObject();
-            this.setDraggableEvent();
+            this.setDraggable();
         },
 
         //드래그 객체 생성
@@ -61,7 +61,7 @@ var ContentBuilder = ContentBuilder || (function ()
         },
 
         //드래그 타겟 마우스 이벤트
-        setDraggableEvent : function ()
+        setDraggable : function ()
         {
             
             var owner = this;
@@ -69,7 +69,8 @@ var ContentBuilder = ContentBuilder || (function ()
             
             draggable.each(function ( i )
             {
-                $(this).bind("mousedown", dragstart );
+                $(this).unbind("mousedown", dragstart);
+                $(this).bind("mousedown", dragstart);
             });
 
             function dragstart( e )
@@ -79,8 +80,9 @@ var ContentBuilder = ContentBuilder || (function ()
                 owner.dragObj.addClass("drag");
                 owner.dragTarget = $(this);
                 var pos = {left:e.pageX, top:e.pageY};
-                owner.appendThumb(owner.dragTarget, pos);
                 owner.dispatchEvent({type:DragEvent.DRAG_START, vars:{target:owner.dragTarget, position:pos}});
+                owner.dragPosition = {x:pos.left - owner.dragTarget.offset().left, y:pos.top - owner.dragTarget.offset().top};
+                owner.moveDragObject(owner.dragTarget, pos);
                 e.preventDefault();
                 e.stopPropagation();
             }
@@ -89,7 +91,8 @@ var ContentBuilder = ContentBuilder || (function ()
             {
                 var pos = {left:e.pageX, top:e.pageY};
                 owner.moveDragObject(owner.dragTarget, pos);
-                owner.dispatchEvent({type:DragEvent.DRAG_MOVE, vars:{target:owner.dragTarget, position:pos}});
+                var area = owner.checkDragArea(owner.dragTarget, pos);
+                owner.dispatchEvent({type:DragEvent.DRAG_MOVE, vars:{area:area, target:owner.dragTarget, position:pos}}); 
                 e.preventDefault();
                 e.stopPropagation();
             }
@@ -100,33 +103,41 @@ var ContentBuilder = ContentBuilder || (function ()
                 $(window).unbind("mouseup", dragend);
                 owner.dragObj.removeClass("drag");
                 var pos = {left:e.pageX, top:e.pageY};
-                owner.dispatchEvent({type:DragEvent.DRAG_END, vars:{target:owner.dragTarget, position:pos}});
-                owner.dragTarget.find("img").css({opacity:""});
+                var area = owner.checkDragArea(owner.dragTarget, pos);
+                owner.dispatchEvent({type:DragEvent.DRAG_END, vars:{area:area, target:owner.dragTarget, position:pos}});
                 owner.dragTarget = null;
-                owner.removeThumb();
+                owner.dragObj.empty();
             }
-        },
-
-        // 드레그 이미지 추가
-        appendThumb : function ( target, position )
-        {
-            var thumb = target.find("img").clone();
-            target.find("img").css({opacity:0.8});
-            this.dragObj.append(thumb);
-            this.dragPosition = {x:position.left - target.offset().left, y:position.top - target.offset().top};
-            this.moveDragObject(target, position); 
-        },
-
-        // 드레그 이미지 제거
-        removeThumb : function ()
-        {
-            this.dragObj.empty();
+            
         },
 
         // 드래그 객체 이동
         moveDragObject : function ( target, position )
         {
             this.dragObj.css({top:position.top - this.dragPosition.y, left:position.left - this.dragPosition.x});
+        },
+
+        // 드래그 영역 체크
+        checkDragArea : function ( target, position )
+        {
+            var areas =  this.container.find(".ui-draggable-area");
+            for(var i=0; i<areas.length; i++)
+            {
+                var area = areas.eq(i);
+                var rect = {
+                    x:area.offset().left, 
+                    y:area.offset().top, 
+                    w:area.width()+parseInt(area.css("padding-left"))+parseInt(area.css("padding-right")), 
+                    h:area.height()+parseInt(area.css("padding-top"))+parseInt(area.css("padding-bottom"))
+                };
+
+                if(area.is(".content_area")) rect.h = 112;
+                if(position.left > rect.x && position.left < rect.x + rect.w && position.top > rect.y && position.top < rect.y + rect.h)
+                {
+                    return area;
+                }
+            }
+            return null
         }
 
     });
@@ -137,11 +148,13 @@ var ContentBuilder = ContentBuilder || (function ()
     */
     return Class.extend(
     {
-        container  : null,
-        tempTool   : null,
-        tempFile   : null,
-        tempSource : null,
-        dragger    : null,
+        container     : null,
+        contentArea   : null,
+        contentBlocks : [],
+        tempTool      : null,
+        tempFile      : null,
+        tempSource    : null,
+        dragger       : null,
 
 
         // init
@@ -159,8 +172,110 @@ var ContentBuilder = ContentBuilder || (function ()
                 }
             }
 
-            this.createTempTool();
+            var owner = this; 
+            owner.contentArea = $('<div class="content_area"></div>');
+            owner.container.append(owner.contentArea);
+
+            owner.initContentBlock();
+            owner.createTempTool();
+
+            // 드래그 생성
+            owner.dragger = new Dragger( owner.container );
+            owner.dragger.addEventListener(DragEvent.DRAG_START, function ( e )
+            {
+                var target = e.vars.target;
+                if(target.is(".ui-draggable-list"))
+                {
+                    appendDragThumb(e.vars.target, e.vars.position);
+                }
+            });
+
+            owner.dragger.addEventListener(DragEvent.DRAG_MOVE, function ( e )
+            {
+                if(e.vars.area)
+                {
+                    if(e.vars.area.is(".content_empty"))
+                    {
+                        $(".content_empty").css({"background-color":"rgba(0,0,0,0.01)"});  
+                    }
+                }
+                else
+                {
+                    $(".content_empty").css({"background-color":""});
+                }
+            });
+
+            owner.dragger.addEventListener(DragEvent.DRAG_END, function ( e )
+            {
+                var target = e.vars.target;
+                if(target.is(".ui-draggable-list"))
+                {
+                    target.find("img").css({opacity:""});
+                }
+                $(".content_empty").css({"background-color":""});
+
+                if(e.vars.area)
+                {
+                    if(e.vars.area.is(".content_empty"))
+                    {
+                        owner.createContentBlock(null, e.vars.target.attr("data-num"));
+                    }
+                }
+
+            });
+
+            // 드레그 이미지 추가
+            function appendDragThumb( target, position )
+            {
+                var thumb = target.find("img").clone();
+                target.find("img").css({opacity:0.8});
+                owner.dragger.dragObj.append(thumb);
+            }
         },
+
+        // 콘텐츠 블록 init
+        initContentBlock : function ()
+        {
+            var owner = this;
+            var blocks = owner.contentArea.find(">div");
+
+            if(blocks.length == 0)
+            {
+               owner.contentArea.addClass("content_empty").addClass("ui-draggable-area"); 
+            }
+        },
+
+        // 콘텐츠 블록 생성
+        createContentBlock : function (beforeTarget, dataNum)
+        {
+            
+           var block = this.findContentBlock( dataNum );
+            
+            if(block)
+            {
+                block.attr("data-thumb", "").attr("data-cat", "");
+                block.find(">div div").attr("contentEditable", true)
+                this.contentArea.append(block);
+                //var contentBlock = new ContentBlock(dataId);
+            }
+        },
+
+
+        // 콘텐츠 블록 찾기
+        findContentBlock : function ( dataNum )
+        {
+            var blocks = this.tempSource.find(">div").parent();
+            for(var i = 0; i<blocks.length; i++)
+            {
+                var block = blocks.eq(i);
+                if(block.attr("data-num") == dataNum)
+                {
+                    return block.clone();
+                }
+            }
+            return null;
+        },
+
 
         // 템플릿툴 생성
         createTempTool : function ()
@@ -223,32 +338,19 @@ var ContentBuilder = ContentBuilder || (function ()
                     var imgPath = $(this).attr("data-thumb");
                     var dataNum = $(this).attr("data-num");
                     var dataCat = $(this).attr("data-cat");
-                    var listHtml = '<div class="ui-draggable" data-num="'+ dataNum +'" data-cat="'+ dataCat +'">\
+                    var listHtml = '<div class="ui-draggable ui-draggable-list" data-num="'+ dataNum +'" data-cat="'+ dataCat +'">\
                                         <img src="'+imgPath+'" />\
                                     </div>';
                     owner.tempTool.find(".temp_list").append(listHtml);
                 });
-
                 
-                owner.dragger = new Dragger( owner.container );
-                owner.dragger.addEventListener(DragEvent.DRAG_START, function ( e )
-                {
-                    
-                });
-                owner.dragger.addEventListener(DragEvent.DRAG_MOVE, function ( e )
-                {
-                    
-                });
-                owner.dragger.addEventListener(DragEvent.DRAG_END, function ( e )
-                {
-                    
-                });
-
                 owner.setSelectBox();
                 owner.sortTemplete(0);
-
+                owner.dragger.setDraggable();
             });  
         }, 
+
+        
 
 
         //카테고리 셀렉박스 세팅
