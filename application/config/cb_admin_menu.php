@@ -19,14 +19,14 @@ $config['admin_page_menu'] = array(
 			'layoutskin'                    => array('레이아웃/메타태그', ''),
 			'memberconfig'            => array('회원가입설정', ''),
 			'emailform'                    => array('메일/쪽지발송양식', ''),
-			'rssconfig'                       => array('RSS 피드 / 사이트맵', ''),
+			/*'rssconfig'                       => array('RSS 피드 / 사이트맵', ''),*/
 			'testemail'                      => array('메일발송테스트', ''),
 			'cbversion'                      => array('버전정보', ''),
-			'dbupgrade'                   => array('DB 업그레이드', ''),
+			/*'dbupgrade'                   => array('DB 업그레이드', ''),
 			'browscapupdate'         => array('Browscap 업데이트', ''),
 			'optimize'                      => array('복구/최적화', ''),
 			'cleanlog'                       => array('오래된로그삭제', ''),
-			'phpinfo'                        => array('phpinfo', 'target="_blank"'),
+			'phpinfo'                        => array('phpinfo', 'target="_blank"'),*/
 		),
 	),
 	'page'                                     => array(
