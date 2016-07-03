@@ -253,9 +253,17 @@ var ContentBuilder = ContentBuilder || (function ()
             
             if(block)
             {
-                block.attr("data-thumb", "").attr("data-cat", "");
-                block.find(">div div").attr("contentEditable", true)
+                block.attr("data-thumb", false).attr("data-cat", false);
+                block.find(">div>div").attr("contentEditable", true)
                 this.contentArea.append(block);
+                block.on("focusin", function ()
+                {
+                    $(this).addClass("ui-dragbox-outlined");
+                });
+                block.on("focusout", function ()
+                {
+                    $(this).removeClass("ui-dragbox-outlined");
+                });
                 //var contentBlock = new ContentBlock(dataId);
             }
         },
