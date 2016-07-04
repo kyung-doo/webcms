@@ -143,9 +143,9 @@ var cookie_prefix = "<?php echo config_item('cookie_prefix'); ?>";
 </div>
 <!-- end wrapper -->
 <footer class="footer">
-    Powered by <a href="<?php echo config_item('ciboard_website'); ?>" target="_blank">CIBoard</a>,
-    Your Version <?php echo CB_VERSION; ?>,
-    Latest Version <?php echo element('latest_version_name', element('version_latest', $layout)); ?> <a href="<?php echo element('latest_download_url', element('version_latest', $layout)); ?>" target="_blank"><i class="fa fa-share-square-o"></i></a>
+    Powered by <a href="<?php echo config_item('ciboard_website'); ?>" target="_blank">FunnyWare</a>,
+    Your Version <?php echo CB_VERSION; ?><!--,
+    Latest Version <?php echo element('latest_version_name', element('version_latest', $layout)); ?> <a href="<?php echo element('latest_download_url', element('version_latest', $layout)); ?>" target="_blank"><i class="fa fa-share-square-o"></i></a>-->
     <span class="btn_top"><a href="#">Top <i class="fa fa-arrow-circle-o-up fa-lg"></i></a></span>
 </footer>
 <script type="text/javascript">

@@ -18,30 +18,11 @@
         echo form_open(current_full_url(), $attributes);
         ?>
             <input type="hidden" name="is_submit" value="1" />
+			<input type="hidden" name="use_sideview" value="1" />
+			<input type="hidden" name="use_mobile_sideview" value="0" />
+			<input type="hidden" name="use_sideview_email" value="1" />
+			<input type="hidden" name="use_mobile_sideview_email" value="0" />
             <div class="form-horizontal">
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">사이드뷰 사용</label>
-                    <div class="col-sm-10">
-                        <label for="use_sideview" class="checkbox-inline">
-                        <input type="checkbox" name="use_sideview" id="use_sideview" value="1" <?php echo set_checkbox('use_sideview', '1', (element('use_sideview', element('data', $view)) ? true : false)); ?> /> PC - 사용합니다
-                        </label>
-                        <label for="use_mobile_sideview" class="checkbox-inline">
-                        <input type="checkbox" name="use_mobile_sideview" id="use_mobile_sideview" value="1" <?php echo set_checkbox('use_mobile_sideview', '1', (element('use_mobile_sideview', element('data', $view)) ? true : false)); ?> /> 모바일 - 사용합니다
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">사이드뷰 이메일 사용</label>
-                    <div class="col-sm-10">
-                        <label for="use_sideview_email" class="checkbox-inline">
-                        <input type="checkbox" name="use_sideview_email" id="use_sideview_email" value="1" <?php echo set_checkbox('use_sideview_email', '1', (element('use_sideview_email', element('data', $view)) ? true : false)); ?> /> PC - 사용합니다
-                        </label>
-                        <label for="use_mobile_sideview_email" class="checkbox-inline">
-                        <input type="checkbox" name="use_mobile_sideview_email" id="use_mobile_sideview_email" value="1" <?php echo set_checkbox('use_mobile_sideview_email', '1', (element('use_mobile_sideview_email', element('data', $view)) ? true : false)); ?> /> 모바일 - 사용합니다
-                        </label>
-                    </div>
-                </div>
-                <hr />
                 <div class="form-group">
                     <label class="col-sm-2 control-label">게시글 에디터 종류</label>
                     <div class="col-sm-10 form-inline">
