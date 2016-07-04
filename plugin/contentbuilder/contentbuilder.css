@@ -16,6 +16,8 @@
 .content_builder .content_area{min-height:80px;padding:55px 35px;box-sizing:border-box;background-color:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
 .content_builder .content_empty{border:rgba(0, 0, 0, 0.25) 1px dashed}
 .content_builder .ui-dragbox-outlined>div:first-child{outline:rgba(228, 156, 90, 0.5) solid 1px}
+.content_builder .ui-add-up:before{content:"";display:block;height:20px;background-color:rgba(0,0,0,0.1)}
+.content_builder .ui-add-down:after{content:"";display:block;height:20px;background-color:rgba(0,0,0,0.1)}
 
 
 
