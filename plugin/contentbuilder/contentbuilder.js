@@ -24,17 +24,17 @@ var ContentBuilder = ContentBuilder || (function ()
     */
     this.ContentBlock = EventDispatcher.extend(
     {
-        container : null,
-        id        : null,
+        container   : null,
+        block       : null,
+        id          : null,
 
         // init
-        init : function (container, id)
+        init : function (container, block, id)
         {
             this.container = container;
+            this.block = block;
             this.id = id;
             this.initEvent();
-            this.container.attr("contentEditable", true);
-            CKEDITOR.inline("content-block-"+this.id);
             
         },
 
@@ -42,13 +42,15 @@ var ContentBuilder = ContentBuilder || (function ()
         initEvent : function ()
         {
             var owner = this;
-            owner.container.bind("focusin", function ()
+            owner.block.bind("focusin", function ()
             {
                 $(this).addClass("ui-dragbox-outlined");
+                owner.container.Editor("showMenuBar");
             });
-            owner.container.bind("focusout", function ()
+            owner.block.bind("focusout", function ()
             {
                 $(this).removeClass("ui-dragbox-outlined");
+                owner.container.Editor("hideMenuBar");
             });
         }
 
@@ -198,10 +200,8 @@ var ContentBuilder = ContentBuilder || (function ()
         // init
         init : function ( containerID, option )
         {
-            CKEDITOR.disableAutoInline = true;
-
             this.container = $(containerID);
-            
+            this.container.Editor();
             var pattern = /tempFile/;
 
             for( var opt in option)
@@ -335,8 +335,9 @@ var ContentBuilder = ContentBuilder || (function ()
                         target.after(block);
                     }
                 }
-                var contentBlock = new ContentBlock(block, this.contentCount);
+                var contentBlock = new ContentBlock(this.container, block, this.contentCount);
                 block.append(blockHtml);
+                block.find(">div>div").attr("contenteditable", true);
                 this.contentBlocks.push( contentBlock );
                 this.contentCount++;
             }

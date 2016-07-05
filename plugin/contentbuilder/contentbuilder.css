@@ -2,7 +2,7 @@
 
 
 .content_builder{position:relative}
-.content_builder .temp_tool{transition-duration:0.6s;transition-timing-function:cubic-bezier(0.19, 1, 0.22, 1);transition-property:right;position:fixed;top:0;right:0;width:260px;height:100%;background-color:rgba(213, 213, 213, 0.9);padding:13px}
+.content_builder .temp_tool{z-index:99999;transition-duration:0.6s;transition-timing-function:cubic-bezier(0.19, 1, 0.22, 1);transition-property:right;position:fixed;top:0;right:0;width:260px;height:100%;background-color:rgba(213, 213, 213, 0.9);padding:13px}
 .content_builder .temp_tool.hide{right:-260px}
 .content_builder .temp_tool .button{position:absolute;top:100px;left:-30px;width:30px;padding:10px 3px;background-color:rgba(213, 213, 213, 0.9);text-align:center;color:#000;border-top-left-radius:4px;border-bottom-left-radius:4px}
 .content_builder .temp_tool .button:hover{color:#337ab7}
