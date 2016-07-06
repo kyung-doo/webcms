@@ -1037,22 +1037,13 @@ You should have received a copy of the GNU General Public License along with thi
 				'select_all':true,
 				'togglescreen':false
 			},options);
-			/*
-	       	var containerDiv = $("<div/>",{ class : "row-fluid Editor-container" });
-			var $this = $(this).hide();	       	
-	       	$this.after(containerDiv); 
-			*/
+
 			var editor  = $(this);
 			if(editor.length == 0)return;
 
 	       	var menuBar = $( "<div/>",{ id : "menuBarDiv",
 								  		class : "row-fluid"
 							}).prependTo($("body")).css({display:"none"});
-			menuBar.bind("mousedown", function ( e )
-			{
-				e.stopPropagation();
-				e.preventDefault();
-			});
 
 			$(window).resize(function ( e )
 			{
@@ -1492,6 +1483,12 @@ You should have received a copy of the GNU General Public License along with thi
 					 
 				});
 			}
+
+			menuWrapElement.bind("mousedown", function ( e )
+			{
+				e.stopPropagation();
+				e.preventDefault();
+			});
 			
 			menuWrapElement.attr('title', itemSettings['tooltip']);
 			menuWrapElement.css('cursor', 'pointer');
