@@ -43,18 +43,31 @@ var ContentBuilder = ContentBuilder || (function ()
         initEvent : function ()
         {
             var owner = this;
+            $(window).bind("mousedown", function ()
+            {
+                if(!owner.isFocus)
+                {
+                    owner.block.removeClass("ui-dragbox-outlined");
+                    owner.container.Editor("hideMenuBar");
+                }
+            });
+
+            owner.block.bind("mouseover", function()
+            {
+                owner.isFocus = true; 
+            });
+
+            owner.block.bind("mouseout", function()
+            {
+                owner.isFocus = false; 
+            });
+
             owner.block.bind("focusin", function ()
             {
                 $(this).addClass("ui-dragbox-outlined");
                 owner.container.Editor("showMenuBar");
-                owner.isFocus = true; 
             });
-            owner.block.bind("focusout", function ()
-            {
-                $(this).removeClass("ui-dragbox-outlined");
-                owner.container.Editor("hideMenuBar");
-                owner.isFocus = false;
-            });
+          
         }
 
     });

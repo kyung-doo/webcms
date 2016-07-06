@@ -942,7 +942,6 @@ You should have received a copy of the GNU General Public License along with thi
 											"tooltip": "Insert Special Character", 
 											"commandname":null, 
 											"custom":function(button){
-													console.log(button);
 													methods.restoreIESelection.apply(this);
 													var flag =0;
 													var splCharDiv = $('<div/>',{id:"specialchar", class:"specialCntr", css :{"display":"none"}}).click(function(event) { event.stopPropagation();});
