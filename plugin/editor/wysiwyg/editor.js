@@ -1049,6 +1049,11 @@ You should have received a copy of the GNU General Public License along with thi
 	       	var menuBar = $( "<div/>",{ id : "menuBarDiv",
 								  		class : "row-fluid"
 							}).prependTo($("body")).css({display:"none"});
+			menuBar.bind("mousedown", function ( e )
+			{
+				e.stopPropagation();
+				e.preventDefault();
+			});
 
 			$(window).resize(function ( e )
 			{
@@ -1488,17 +1493,7 @@ You should have received a copy of the GNU General Public License along with thi
 					 
 				});
 			}
-			var owner = this;
-			menuWrapElement.bind("mousedown", function ( e )
-			{
-				$(this).blur();
-				e.preventDefault();
-			});
-			menuElement.bind("mousedown", function ( e )
-			{
-				$(this).blur();
-				e.preventDefault();
-			});
+			
 			menuWrapElement.attr('title', itemSettings['tooltip']);
 			menuWrapElement.css('cursor', 'pointer');
 			menuWrapElement.append(menuElement);

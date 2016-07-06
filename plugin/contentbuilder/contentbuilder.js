@@ -27,6 +27,7 @@ var ContentBuilder = ContentBuilder || (function ()
         container   : null,
         block       : null,
         id          : null,
+        isFocus     : false,
 
         // init
         init : function (container, block, id)
@@ -46,11 +47,13 @@ var ContentBuilder = ContentBuilder || (function ()
             {
                 $(this).addClass("ui-dragbox-outlined");
                 owner.container.Editor("showMenuBar");
+                owner.isFocus = true; 
             });
             owner.block.bind("focusout", function ()
             {
                 $(this).removeClass("ui-dragbox-outlined");
                 owner.container.Editor("hideMenuBar");
+                owner.isFocus = false;
             });
         }
 
@@ -201,7 +204,9 @@ var ContentBuilder = ContentBuilder || (function ()
         init : function ( containerID, option )
         {
             this.container = $(containerID);
-            this.container.Editor();
+            
+
+
             var pattern = /tempFile/;
 
             for( var opt in option)
@@ -215,6 +220,10 @@ var ContentBuilder = ContentBuilder || (function ()
             var owner = this; 
             owner.contentArea = $('<div class="content_area"></div>');
             owner.container.append(owner.contentArea);
+
+
+            owner.container.Editor();
+
             owner.initContentBlock();
             owner.createTempTool();
 
