@@ -43,31 +43,19 @@ var ContentBuilder = ContentBuilder || (function ()
         initEvent : function ()
         {
             var owner = this;
-            $(window).bind("mousedown", function ()
-            {
-                if(!owner.isFocus)
-                {
-                    owner.block.removeClass("ui-dragbox-outlined");
-                    owner.container.Editor("hideMenuBar");
-                }
-            });
-
-            owner.block.bind("mouseover", function()
-            {
-                owner.isFocus = true; 
-            });
-
-            owner.block.bind("mouseout", function()
-            {
-                owner.isFocus = false; 
-            });
-
             owner.block.bind("focusin", function ()
             {
                 $(this).addClass("ui-dragbox-outlined");
                 owner.container.Editor("showMenuBar");
+                owner.isFocus = true; 
             });
-          
+            owner.block.bind("focusout", function ()
+            {
+                owner.block.removeClass("ui-dragbox-outlined");
+                owner.container.Editor("hideMenuBar");
+                owner.isFocus = false;
+                
+            });
         }
 
     });
@@ -169,7 +157,8 @@ var ContentBuilder = ContentBuilder || (function ()
         // 드래그 객체 이동
         moveDragObject : function ( target, position )
         {
-            this.dragObj.css({top:position.top - this.dragPosition.y, left:position.left - this.dragPosition.x});
+            var winTop = $(window).scrollTop();
+            this.dragObj.css({top:position.top - winTop - this.dragPosition.y, left:position.left - this.dragPosition.x});
         },
 
         // 드래그 영역 체크
@@ -454,9 +443,6 @@ var ContentBuilder = ContentBuilder || (function ()
                 owner.dragger.setDraggable();
             });  
         }, 
-
-        
-
 
         //카테고리 셀렉박스 세팅
         setSelectBox : function ()

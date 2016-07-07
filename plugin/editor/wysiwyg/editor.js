@@ -1051,7 +1051,11 @@ You should have received a copy of the GNU General Public License along with thi
 			});
 			$(window).resize();
 			
-											
+			menuBar.bind("mousedown", function ( e )
+			{
+				e.stopPropagation();
+				e.preventDefault();
+			});						
 	       	
 	       	$(this).data("menuBar", menuBar);
 	       	$(this).data("editor", editor);
@@ -1115,6 +1119,7 @@ You should have received a copy of the GNU General Public License along with thi
 		           	}
 		        }
 		    });
+			/*
 		    editor.bind("contextmenu", function(e){
 	       		if($('#context-menu').length)
 	       			$('#context-menu').remove();
@@ -1141,7 +1146,9 @@ You should have received a copy of the GNU General Public License along with thi
 	       			cMenuUl.appendTo(cMenu);
 	       			cMenu.appendTo('body');
 	       		}
+				   console.log("!!!!context");
 	       	});
+			   */
 		},
 		createLinkContext: function(event,cMenuUl){
 			var cMenuli = $('<li/>').append($('<a/>',{
@@ -1398,7 +1405,8 @@ You should have received a copy of the GNU General Public License along with thi
 								                			e.preventDefault();
 								               				}).click(function(obj){return function(){onSave.apply(obj)}}(this)))
 	         								  		)
-       											)	
+       											)
+												   	
        									);	
 			modalElement.appendTo("body");
 			return modalTrigger;
@@ -1419,8 +1427,15 @@ You should have received a copy of the GNU General Public License along with thi
 										"data-toggle":"dropdown",
 										"href":"javascript:void(0)",
 										"title":itemSettings["tooltip"]
-										}).html(itemSettings["default"]).append($("<span/>",{class:"caret"})).mousedown(function(e){
+										}).html(itemSettings["default"]).append($("<span/>",{class:"caret"})).mousedown(function(e)
+										{
+											e.stopPropagation();
 											e.preventDefault();
+										}).click(function (e)
+										{
+											$(this).click();
+											e.stopPropagation();
+											e.preventDefault(); 
 										}));
 				
 				$.each(options,function(i,v){
@@ -1439,7 +1454,7 @@ You should have received a copy of the GNU General Public License along with thi
 				var action = "change";
 		    }
 		    else if(itemSettings["modal"]){
-		    	var menuWrapElement = methods.createModal.apply(this,[itemSettings["modalId"], itemSettings["modalHeader"], itemSettings["modalBody"], itemSettings["onSave"]]);		    			    	
+		    	var menuWrapElement = methods.createModal.apply(this,[itemSettings["modalId"], itemSettings["modalHeader"], itemSettings["modalBody"], itemSettings["onSave"]]);		    			
 		    	var menuElement = $("<i/>");
 		    	if(itemSettings["icon"])
 					menuElement.addClass(itemSettings["icon"]);
@@ -1484,11 +1499,7 @@ You should have received a copy of the GNU General Public License along with thi
 				});
 			}
 
-			menuWrapElement.bind("mousedown", function ( e )
-			{
-				e.stopPropagation();
-				e.preventDefault();
-			});
+			
 			
 			menuWrapElement.attr('title', itemSettings['tooltip']);
 			menuWrapElement.css('cursor', 'pointer');
