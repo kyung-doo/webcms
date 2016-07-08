@@ -13,12 +13,22 @@ var ContentBuilder = ContentBuilder || (function ()
 
 
     /*
+    *  블록 이벤트
+    */
+    var BlockEvent ={
+        BLOCK_COPY : "blockCopy",
+        BLOCK_DELETE : "blockDelete"
+    }
+
+
+    /*
     *  템플릿 카테고리
     */
     var tempCategory = [{name:"Default", id:0},{name:"All", id:-1},{name:"Title", id:1},{name:"Title, Subtitle", id:2},{name:"Info, Title", id:3},{name:"Heading, Paragraph", id:5},{name:"Paragraph", id:6},{name:"Buttons", id:33},{name:"Cards", id:34},{name:"Images + Caption", id:9},{name:"Images", id:11},{name:"Single Image", id:12},{name:"Call to Action", id:13},{name:"List", id:14},{name:"Quotes", id:15},{name:"Profile", id:16},{name:"Map", id:17},{name:"Video", id:20},{name:"Social", id:18},{name:"Services", id:21},{name:"Contact Info", id:22},{name:"Pricing", id:23},{name:"Team Profile", id:24},{name:"Products/Portfolio", id:25},{name:"How It Works", id:26},{name:"Partners/Clients", id:27},{name:"As Featured On", id:28},{name:"Achievements", id:29},{name:"Skills", id:32},{name:"Coming Soon", id:30},{name:"Page Not Found", id:31},{name:"Separator", id:19}];
 
 
 
+    
     /*
     *  contentBlock 클래스
     */
@@ -26,6 +36,7 @@ var ContentBuilder = ContentBuilder || (function ()
     {
         container   : null,
         block       : null,
+        tool        : null,        
         id          : null,
         isFocus     : false,
 
@@ -35,26 +46,67 @@ var ContentBuilder = ContentBuilder || (function ()
             this.container = container;
             this.block = block;
             this.id = id;
+            this.createTool();
             this.initEvent();
-            
+        },
+
+        // 제거 
+        dispos : function ()
+        {
+            this.block.unbind("focusin");
+            this.block.unbind("focusout");
+            this.block.remove();
         },
 
         // 이벤트 세팅
         initEvent : function ()
         {
             var owner = this;
+            var tool
             owner.block.bind("focusin", function ()
             {
                 $(this).addClass("ui-dragbox-outlined");
                 owner.container.Editor("showMenuBar");
+                owner.tool.css({display:"block"});
                 owner.isFocus = true; 
             });
             owner.block.bind("focusout", function ()
             {
                 owner.block.removeClass("ui-dragbox-outlined");
                 owner.container.Editor("hideMenuBar");
+                owner.tool.css({display:"none"});
                 owner.isFocus = false;
+            });
+        },
+
+        //툴바 생성
+        createTool : function ()
+        {
+            var owner = this;
+            owner.tool = $('<div class="block-tool">\
+                              <div class="tool-btn move"><i class="fa fa-arrows"></i></div>\
+                              <div class="tool-btn add"><i class="fa fa-plus"></i></div>\
+                              <div class="tool-btn del" data-toggle="modal" data-target="#deleteModal'+owner.id+'"><i class="fa fa-trash-o"></i></div>\
+                          </div>');
+
+            owner.block.append(owner.tool);
+            owner.tool.bind("mousedown", function (e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+
+            owner.container.Editor("createModal", "deleteModal"+owner.id, "삭제", "삭제하시겠습니까?", function ()
+            {
+                owner.dispatchEvent({type:BlockEvent.BLOCK_DELETE, vars:{target:owner}});
+                $("#deleteModal"+owner.id).modal("hide");
                 
+            }, "modal-sm");
+
+
+            owner.tool.find(".add").bind("click", function ( e )
+            {   
+                owner.dispatchEvent({type:BlockEvent.BLOCK_COPY, vars:{target:owner}});
             });
         }
 
@@ -200,6 +252,7 @@ var ContentBuilder = ContentBuilder || (function ()
         dragger       : null,
         contentBlocks : [],
         contentCount  : 0,
+        deleteModal   : null,
 
 
         // init
@@ -222,14 +275,19 @@ var ContentBuilder = ContentBuilder || (function ()
             var owner = this; 
             owner.contentArea = $('<div class="content_area"></div>');
             owner.container.append(owner.contentArea);
-
-
             owner.container.Editor();
-
+            owner.initDragger();
             owner.initContentBlock();
             owner.createTempTool();
 
             // 드래그 생성
+            
+        },
+
+        // 드래거 init
+        initDragger : function ()
+        {
+            var owner = this;
             owner.dragger = new Dragger( owner.container );
             owner.dragger.addEventListener(DragEvent.DRAG_START, function ( e )
             {
@@ -325,15 +383,15 @@ var ContentBuilder = ContentBuilder || (function ()
         // 콘텐츠 블록 생성
         createContentBlock : function (target, dataNum, arrow)
         {
-            
-           var blockHtml = this.findContentBlock( dataNum );
+            var owner = this;
+            var blockHtml = owner.findContentBlock( dataNum );
             
             if(blockHtml)
             {
-                var block = $('<div id="content-block-'+this.contentCount+'" class="ui-daggable ui-drag-block ui-drag-area" data-num="'+dataNum+'"></div>');
+                var block = $('<div id="content-block-'+owner.contentCount+'" class="ui-daggable ui-drag-block ui-drag-area" data-num="'+dataNum+'"></div>');
                 if(target == null)
                 {
-                    this.contentArea.append(block);
+                    owner.contentArea.append(block);
                 }
                 else
                 {
@@ -346,12 +404,50 @@ var ContentBuilder = ContentBuilder || (function ()
                         target.after(block);
                     }
                 }
-                var contentBlock = new ContentBlock(this.container, block, this.contentCount);
                 block.append(blockHtml);
                 block.find(">div>div").attr("contenteditable", true);
-                this.contentBlocks.push( contentBlock );
-                this.contentCount++;
+
+                var contentBlock = new ContentBlock(owner.container, block, owner.contentCount);
+
+                contentBlock.addEventListener(BlockEvent.BLOCK_COPY, function ( e )
+                {
+                    console.log("copy");
+                });
+
+                contentBlock.addEventListener(BlockEvent.BLOCK_DELETE, function ( e )
+                {
+                    
+                   owner.deleteContentBlock(e.vars.target);
+                });
+
+                owner.contentBlocks.push( contentBlock );
+                owner.contentCount++;
             }
+        },
+
+        // 콘텐츠 블록 삭제
+        deleteContentBlock : function ( block )
+        {
+            var tempBlock = new Array();
+            for(var i = 0; i<this.contentBlocks.length; i++)
+            {
+                var contentBlock = this.contentBlocks[i];
+                if(block == contentBlock)
+                {
+                    contentBlock.dispos();
+                    contentBlock.removeEventListener(BlockEvent.BLOCK_DELETE);
+                    contentBlock.removeEventListener(BlockEvent.BLOCK_COPY);
+                    contentBlock = null;
+                }
+                else
+                {
+                    tempBlock.push(contentBlock);
+                }
+            }
+            this.contentBlocks = tempBlock;
+            this.initContentBlock();
+            this.container.Editor("hideMenuBar");
+            this.dragger.setDraggable();
         },
 
 

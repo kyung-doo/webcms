@@ -1359,21 +1359,22 @@ You should have received a copy of the GNU General Public License along with thi
 
 		},
 
-		createModal: function(modalId, modalHeader, modalBody, onSave){
+		createModal: function(modalId, modalHeader, modalBody, onSave, size){
 			//Create a Modal for the button.		
 			var modalTrigger = $('<a/>',{	href:"#"+modalId,
 											role:"button",
 											class:"btn btn-default",
 											"data-toggle":"modal"
 			});
+			size = size || ""; 
 			var modalElement = $('<div/>',{ id: modalId,
-								           class: "modal fade",
+								           class: "modal fade ",
 								              tabindex: "-1",
 								              role: "dialog",
 								              "aria-labelledby":"h3_"+modalId,
 								              "aria-hidden":"true"
 								          }).append($('<div>',{
-								            	class:"modal-dialog"
+								            	class:"modal-dialog "+ size
 								         		}).append($('<div>',{
 							            			class:"modal-content"
 									         		}).append($('<div>',{
@@ -1394,14 +1395,14 @@ You should have received a copy of the GNU General Public License along with thi
 									            		class:"modal-footer"
 									         			}).append($('<button/>',{
 									                		type:"button",
-									                		class:"btn btn-default",
+									                		class:"btn btn-default btn-sm",
 									                		"data-dismiss":"modal",
 									                		"aria-hidden":"true"
-									               			}).html('Cancel')
+									               			}).html('취소')
 								           	  			).append($('<button/>',{
 								                			type:"button",
-								                			class:"btn btn-success",
-								               				}).html('Done').mousedown(function(e){
+								                			class:"btn btn-success btn-sm",
+								               				}).html('확인').mousedown(function(e){
 								                			e.preventDefault();
 								               				}).click(function(obj){return function(){onSave.apply(obj)}}(this)))
 	         								  		)
