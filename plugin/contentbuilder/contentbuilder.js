@@ -84,7 +84,7 @@ var ContentBuilder = ContentBuilder || (function ()
         {
             var owner = this;
             owner.tool = $('<div class="block-tool">\
-                              <div class="tool-btn move"><i class="fa fa-arrows"></i></div>\
+                              <div class="tool-btn move ui-draggable"><i class="fa fa-arrows"></i></div>\
                               <div class="tool-btn add"><i class="fa fa-plus"></i></div>\
                               <div class="tool-btn del" data-toggle="modal" data-target="#deleteModal'+owner.id+'"><i class="fa fa-trash-o"></i></div>\
                           </div>');
@@ -171,10 +171,10 @@ var ContentBuilder = ContentBuilder || (function ()
             owner.dragObj.addClass("drag");   
             owner.dragTarget = $(this);
             var pos = {left:e.pageX, top:e.pageY};
-            owner.startPos = pos; 
-            owner.dispatchEvent({type:DragEvent.DRAG_START, vars:{target:owner.dragTarget, position:pos}});
+            owner.startPos = pos;
             owner.dragPosition = {x:pos.left - owner.dragTarget.offset().left, y:pos.top - owner.dragTarget.offset().top};
-            owner.moveDragObject(owner.dragTarget, pos);
+            owner.moveDragObject(owner.dragTarget, pos); 
+            owner.dispatchEvent({type:DragEvent.DRAG_START, vars:{target:owner.dragTarget, position:pos}});
             //e.preventDefault();
             //e.stopPropagation();
         },
@@ -298,7 +298,11 @@ var ContentBuilder = ContentBuilder || (function ()
                 var target = e.vars.target;
                 if(target.is(".ui-drag-list"))
                 {
-                    appendDragThumb(e.vars.target, e.vars.position);
+                    appendDragThumb(target);
+                }
+                else if(target.is(".tool-btn"))
+                {
+                    moveDragBlock(target);
                 }
             });
 
@@ -360,15 +364,25 @@ var ContentBuilder = ContentBuilder || (function ()
                 
                 $(".ui-drag-block").removeClass("ui-add-up");
                 $(".ui-drag-block").removeClass("ui-add-down");
+                $(".ui-drag-block").css({display:"block"});
 
             });
 
             // 드레그 이미지 추가
-            function appendDragThumb( target, position )
+            function appendDragThumb( target )
             {
                 var thumb = target.find("img").clone();
                 target.find("img").css({opacity:0.8});
                 owner.dragger.dragObj.append(thumb);
+            }
+
+            function moveDragBlock(target)
+            {
+                var block = target.parent().parent();
+                var copy = block.clone();
+                copy.removeClass("ui-drag-block").removeClass("ui-drag-area").css({width:block.width()}); 
+                owner.dragger.dragObj.append(copy);
+                target.parent().parent().css({display:"none"});
             }
         },
 
@@ -403,7 +417,7 @@ var ContentBuilder = ContentBuilder || (function ()
             
             if(blockHtml)
             {
-                var block = $('<div id="content-block-'+owner.contentCount+'" class="ui-draggable ui-drag-block ui-drag-area" data-num="'+dataNum+'"></div>');
+                var block = $('<div id="content-block-'+owner.contentCount+'" class="ui-drag-block ui-drag-area" data-num="'+dataNum+'"></div>');
                 if(target == null)
                 {
                     owner.contentArea.append(block);
