@@ -100,6 +100,10 @@ var ContentBuilder = ContentBuilder || (function ()
             {
                 owner.dispatchEvent({type:BlockEvent.BLOCK_DELETE, vars:{target:owner}});
                 $("#deleteModal"+owner.id).modal("hide");
+                $("#deleteModal"+owner.id).on("bsTransitionEnd", function ( e )
+                {
+                    $(this).remove();
+                });
                 
             }, "modal-sm");
 
@@ -171,8 +175,8 @@ var ContentBuilder = ContentBuilder || (function ()
             owner.dispatchEvent({type:DragEvent.DRAG_START, vars:{target:owner.dragTarget, position:pos}});
             owner.dragPosition = {x:pos.left - owner.dragTarget.offset().left, y:pos.top - owner.dragTarget.offset().top};
             owner.moveDragObject(owner.dragTarget, pos);
-            e.preventDefault();
-            e.stopPropagation();
+            //e.preventDefault();
+            //e.stopPropagation();
         },
 
         // 드래그 이동
@@ -381,14 +385,25 @@ var ContentBuilder = ContentBuilder || (function ()
         },
 
         // 콘텐츠 블록 생성
-        createContentBlock : function (target, dataNum, arrow)
+        createContentBlock : function (target, dataNum, source)
         {
             var owner = this;
-            var blockHtml = owner.findContentBlock( dataNum );
+            var blockHtml;
+
+            if(dataNum == null)
+            {
+                $(source).find(".block-tool").remove();
+                blockHtml = $(source)[0].outerHTML;
+            }
+            else
+            {
+                blockHtml = owner.findContentBlock( dataNum );
+            }
+
             
             if(blockHtml)
             {
-                var block = $('<div id="content-block-'+owner.contentCount+'" class="ui-daggable ui-drag-block ui-drag-area" data-num="'+dataNum+'"></div>');
+                var block = $('<div id="content-block-'+owner.contentCount+'" class="ui-draggable ui-drag-block ui-drag-area" data-num="'+dataNum+'"></div>');
                 if(target == null)
                 {
                     owner.contentArea.append(block);
@@ -411,17 +426,19 @@ var ContentBuilder = ContentBuilder || (function ()
 
                 contentBlock.addEventListener(BlockEvent.BLOCK_COPY, function ( e )
                 {
-                    console.log("copy");
+                    e.vars.target.block.addClass("ui-add-down");
+                    owner.createContentBlock(e.vars.target.block, null, e.vars.target.block.html());
+                    e.vars.target.block.removeClass("ui-add-down");
                 });
 
                 contentBlock.addEventListener(BlockEvent.BLOCK_DELETE, function ( e )
                 {
-                    
                    owner.deleteContentBlock(e.vars.target);
                 });
 
                 owner.contentBlocks.push( contentBlock );
                 owner.contentCount++;
+                owner.dragger.setDraggable();
             }
         },
 
