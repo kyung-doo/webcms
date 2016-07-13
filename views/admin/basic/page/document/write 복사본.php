@@ -1,8 +1,3 @@
-<link rel="stylesheet" type="text/css" href="/plugin/editor/wysiwyg/editor.css" />
-<link rel="stylesheet" type="text/css" href="/plugin/contentbuilder/contentBuilder.css" />
-<script type="text/javascript" src="/assets/js/eventDispatcher.js"></script>
-<script type="text/javascript" src="/plugin/editor/wysiwyg/editor.js"></script>
-<script type="text/javascript" src="/plugin/contentbuilder/contentBuilder.js"></script>
 <div class="box">
     <div class="box-table">
         <?php
@@ -21,38 +16,9 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">페이지제목</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="doc_title" value="<?php echo set_value('doc_title', element('doc_title', element('data', $view))); ?>" style="max-width:1050px" />
+                        <input type="text" class="form-control" name="doc_title" value="<?php echo set_value('doc_title', element('doc_title', element('data', $view))); ?>" />
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">페이지내용</label>
-                    <div class="col-sm-10 form-inline">
-                        <div id="contentBuilder" class="content_builder" style="max-width:1050px">
-
-        	            </div>
-                        <textarea id="content-text" name="doc_content" style="display:none"></textarea>
-                    </div>
-                </div>
-
-                <div class="text-center mt30" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default btn-sm btn-history-back" >취소하기</button>
-                    <button type="button" class="save-btn btn btn-success btn-sm">저장하기</button>
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <!--
                 <div class="form-group">
                     <label class="col-sm-2 control-label">PC 레이아웃/스킨</label>
                     <div class="col-sm-10 form-inline">
@@ -104,18 +70,18 @@
                         모바일 내용이 일반웹페이지 내용과 다를 경우에 입력합니다. 같은 경우는 입력하지 않으셔도 됩니다
                     </div>
                 </div>
-                
-
-                -->
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default btn-sm btn-history-back" >취소하기</button>
+                    <button type="submit" class="btn btn-success btn-sm">저장하기</button>
+                </div>
             </div>
         <?php echo form_close(); ?>
     </div>
 </div>
 
 <script type="text/javascript">
-
+//<![CDATA[
 $(function() {
-    /*
     $('#fadminwrite').validate({
         rules: {
             doc_key: {required:true, minlength:3, maxlength:50, alpha_dash : true},
@@ -124,14 +90,6 @@ $(function() {
             doc_mobile_content : {<?php echo ($this->cbconfig->item('use_document_dhtml')) ? 'valid_' . $this->cbconfig->item('document_editor_type') : ''; ?> : true }
         }
     });
-    */
-    var contentBuilder = new ContentBuilder( "#contentBuilder", {tempFile:"/plugin/contentbuilder/template.html"});
-
-    $(".save-btn").bind("click", function ( e )
-    {
-        $("#content-text").val(contentBuilder.getHtml());
-        $("#fadminwrite").submit();
-    });
 });
-
+//]]>
 </script>

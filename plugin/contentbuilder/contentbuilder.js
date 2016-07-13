@@ -612,7 +612,19 @@ var ContentBuilder = ContentBuilder || (function ()
         // html 출력
         getHtml : function ()
         {
-
+            var owner = this;    
+            var output = "";
+            this.container.find(".content_area").find(">div").each(function ( i )
+            {
+                var dataNum = $(this).attr("data-num");
+                var blockHtml = '<div data-num="'+dataNum+'">';
+                blockHtml += owner.findContentBlock( dataNum );
+                blockHtml += '</div>';
+                output +=  blockHtml;
+            });
+            
+            return output;
+            
         }
     });
     

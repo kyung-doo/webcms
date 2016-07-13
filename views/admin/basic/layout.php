@@ -20,6 +20,7 @@
 <script type="text/javascript" src="<?php echo base_url('assets/js/bootstrap.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url('assets/js/jquery.validate.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url('assets/js/jquery.validate.extension.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('assets/js/mresize.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url('assets/js/common.js'); ?>"></script>
 <!--[if lt IE 9]>
 <script type="text/javascript" src="<?php echo base_url('assets/js/html5shiv.min.js'); ?>"></script>
@@ -157,6 +158,17 @@ $(document).ready(function() {
                 skeyword: { required:true, minlength:2}
             }
         });
+
+        $(".content_wrapper").on("mresize", function ( e )
+        {
+            $(window).resize();
+        });
+        $(window).on("resize", function ( e )
+        {
+            $(".nav-default").css({"height":$(".content_wrapper").height()+20});
+        });
+        $(window).resize();
+        
     });
 });
 //]]>
