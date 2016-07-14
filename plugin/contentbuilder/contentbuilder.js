@@ -616,13 +616,15 @@ var ContentBuilder = ContentBuilder || (function ()
             var output = "";
             this.container.find(".content_area").find(">div").each(function ( i )
             {
+                $(this).find(".block-tool").remove();
+                $(this).find("div").attr("contenteditable", null);
                 var dataNum = $(this).attr("data-num");
                 var blockHtml = '<div data-num="'+dataNum+'">';
-                blockHtml += owner.findContentBlock( dataNum );
+                blockHtml += $(this).html();
                 blockHtml += '</div>';
                 output +=  blockHtml;
             });
-            
+
             return output;
             
         }
