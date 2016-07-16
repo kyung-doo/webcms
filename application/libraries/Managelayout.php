@@ -129,14 +129,10 @@ class Managelayout extends CI_Controller
         $data['meta_author'] = $meta_author = str_replace($searchconfig, $replaceconfig, $meta_author);
         $data['page_name'] = $page_name = str_replace($searchconfig, $replaceconfig, $page_name);
 
-        $layoutdirname = $device_view_type === 'mobile' ? element('mobile_layout_dir', $config) : element('layout_dir', $config);
-        if (empty($layoutdirname)) {
-            $layoutdirname = $device_view_type === 'mobile' ? $CI->cbconfig->item('mobile_layout_default') : $CI->cbconfig->item('layout_default');
-        }
         if (empty($layoutdirname)) {
             $layoutdirname = 'basic';
         }
-        $layout = '_layout/' . $layoutdirname;
+        $layout = $layoutdirname. '/_layout' ;
         $data['layout_skin_path'] = $layout;
         $data['layout_skin_url'] = base_url( VIEW_DIR . $data['layout_skin_path']);
         $layout .= '/';
@@ -145,18 +141,14 @@ class Managelayout extends CI_Controller
         }
         $data['layout_skin_file'] = $layout;
 
-        $skindir = $device_view_type === 'mobile' ? element('mobile_skin_dir', $config) : element('skin_dir', $config);
-        if (empty($skindir)) {
-            $skindir = $device_view_type === 'mobile' ? $CI->cbconfig->item('mobile_skin_default') : $CI->cbconfig->item('skin_default');
-        }
         if (empty($skindir)) {
             $skindir = 'basic';
         }
         $skin = '';
         if (element('path', $config)) {
-            $skin .= element('path', $config) . '/';
+            $skin .= $skindir.'/'. element('path', $config);
         }
-        $skin .= $skindir;
+
         $data['view_skin_path'] = $skin;
         $data['view_skin_url'] = base_url( VIEW_DIR . $data['view_skin_path']);
         $skin .= '/';
