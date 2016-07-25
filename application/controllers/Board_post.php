@@ -68,6 +68,7 @@ class Board_post extends CB_Controller
             )
         );
 
+
         // 이벤트가 존재하면 실행합니다
         $view['view']['event']['before_layout'] = Events::trigger('before_layout', $eventname);
 
@@ -116,6 +117,7 @@ class Board_post extends CB_Controller
             'meta_author' => $meta_author,
             'page_name' => $page_name,
         );
+
         $view['layout'] = $this->managelayout->front($layoutconfig, $this->cbconfig->get_device_view_type());
         $this->data = $view;
         $this->layout = element('layout_skin_file', element('layout', $view));
@@ -273,6 +275,7 @@ class Board_post extends CB_Controller
                         'mobile_skin_dir' => $mobile_skin_dir,
                         'page_title' => $page_title,
                     );
+					
                     $view['layout'] = $this->managelayout->front($layoutconfig, $this->cbconfig->get_device_view_type());
                     $this->data = $view;
                     $this->layout = element('layout_skin_file', element('layout', $view));
@@ -815,22 +818,21 @@ class Board_post extends CB_Controller
                 'meta_author' => $meta_author,
                 'page_name' => $page_name,
             );
-            $view['layout'] = $this->managelayout->front($layoutconfig, $this->cbconfig->get_device_view_type());
+
+			$view['layout'] = $this->managelayout->front($layoutconfig, $this->cbconfig->get_device_view_type());
             $this->data = $view;
             $this->layout = element('layout_skin_file', element('layout', $view));
-            if ($show_list_from_view) {
+
+			if ($show_list_from_view) {
                 $list_skin_file = element('use_gallery_list', $board) ? 'gallerylist' : 'list';
                 $listskindir = ($this->cbconfig->get_device_view_type() === 'mobile')
                     ? $mobile_skin_dir : $skin_dir;
                 if (empty($listskindir)) {
-                    $listskindir
-                        = ($this->cbconfig->get_device_view_type() === 'mobile')
-                        ? $this->cbconfig->item('mobile_skin_default')
-                        : $this->cbconfig->item('skin_default');
+                    $listskindir = "basic";
                 }
                 $this->view = array(
                     element('view_skin_file', element('layout', $view)),
-                    'board/' . $listskindir . '/' . $list_skin_file,
+                    $listskindir.'/board/'. $list_skin_file,
                 );
             } else {
                 $this->view = element('view_skin_file', element('layout', $view));

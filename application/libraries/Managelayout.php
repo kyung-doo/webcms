@@ -237,7 +237,7 @@ class Managelayout extends CI_Controller
             $data['popup'] = $CI->popuplib->display_popup();
 
         }
-		
+
         return $data;
     }
 
